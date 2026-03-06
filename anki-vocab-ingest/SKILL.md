@@ -20,9 +20,11 @@ Use this skill to run a strict **preview → approve → add** pipeline.
    - HyperTTS add-on installed
    - HyperTTS `GoogleTranslate` (free) enabled
    - target note model has `Front`, `Back`, `example`, `sound`
-6. Build a CSV preview and send it for approval.
-7. Add cards only after explicit approval.
-8. Generate audio with row-level language (`sound_lang`) and populate `sound`, then sync.
+6. Inspect existing Anki decks and propose the best target deck for the batch.
+   - If no good match exists, propose a new deck name.
+7. Build a CSV preview and send it with deck proposal for approval.
+8. Add cards only after explicit approval of content and deck.
+9. Generate audio with row-level language (`sound_lang`) and populate `sound`, then sync.
 
 Never skip step 5 unless user explicitly asks to bypass preview.
 
@@ -41,15 +43,14 @@ Optional columns:
 
 Use `scripts/anki_vocab_pipeline.py`.
 
-### Preview only
+### Preview only (with automatic deck proposal)
 
 ```bash
 python3 scripts/anki_vocab_pipeline.py \
-  --csv ./preview.csv \
-  --deck "Русский::TEST_HyperTTS_Sandbox"
+  --csv ./preview.csv
 ```
 
-### Add + sync
+### Add + sync (deck must be explicit after approval)
 
 ```bash
 python3 scripts/anki_vocab_pipeline.py \

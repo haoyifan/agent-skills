@@ -161,10 +161,64 @@ def print_preview(rows: list[Row]) -> None:
         writer.writerow([r.front, r.back, r.example, r.sound_text, r.sound_lang])
 
 
+def dominant_lang(rows: list[Row], fallback: str) -> str:
+    counts: dict[str, int] = {}
+    for r in rows:
+        counts[r.sound_lang] = counts.get(r.sound_lang, 0) + 1
+    if not counts:
+        return fallback
+    return max(counts.items(), key=lambda kv: kv[1])[0]
+
+
+def propose_decks(existing_decks: list[str], lang_code: str) -> dict[str, Any]:
+    lang_hints = {
+        "ru": ["рус", "russian", "ru"],
+        "es": ["españ", "spanish", "es"],
+        "de": ["deutsch", "german", "de"],
+        "ko": ["한국", "korean", "ko"],
+        "fr": ["french", "français", "fr"],
+        "pt": ["portugu", "pt"],
+        "ar": ["عربي", "arabic", "ar"],
+    }
+    hints = lang_hints.get(lang_code, [lang_code])
+
+    scored: list[tuple[int, str]] = []
+    for d in existing_decks:
+        dl = d.lower()
+        score = 0
+        for h in hints:
+            if h in dl:
+                score += 3
+        if "test" in dl or "sandbox" in dl:
+            score -= 1
+        scored.append((score, d))
+
+    scored.sort(key=lambda x: (-x[0], x[1]))
+    top = [d for s, d in scored if s > 0][:5]
+
+    if top:
+        return {
+            "language": lang_code,
+            "recommendedDeck": top[0],
+            "alternatives": top[1:3],
+            "newDeckSuggested": None,
+            "reason": "Matched existing deck names by language hints.",
+        }
+
+    suggested = f"{lang_code.upper()}" if len(lang_code) <= 3 else f"Language::{lang_code}"
+    return {
+        "language": lang_code,
+        "recommendedDeck": None,
+        "alternatives": [],
+        "newDeckSuggested": suggested,
+        "reason": "No strong existing deck match found.",
+    }
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--csv", required=True, help="Input CSV path")
-    p.add_argument("--deck", required=True, help="Target deck name")
+    p.add_argument("--deck", help="Target deck name (optional in preview mode)")
     p.add_argument("--model", default="Basic and Reverse", help="Anki note type")
     p.add_argument("--default-lang", default="ru", help="Default TTS language (e.g. ru, es)")
     p.add_argument("--add", action="store_true", help="Actually add notes (default is preview-only)")
@@ -184,15 +238,29 @@ def main() -> int:
     hypertts_status = verify_hypertts_googletranslate(auto_fix=args.fix_hypertts_config)
     model_fields = verify_model_fields(args.model)
 
-    # Ensure deck exists
-    anki_invoke("createDeck", {"deck": args.deck})
+    lang = dominant_lang(rows, args.default_lang)
+    decks = anki_invoke("deckNames") or []
+    deck_plan = propose_decks(decks, lang)
 
-    # Duplicate check preview
-    candidate_notes = [
-        note_payload(args.deck, args.model, r, sound_filename=None, allow_duplicates=args.allow_duplicates)
-        for r in rows
-    ]
-    can_add = anki_invoke("canAddNotes", {"notes": candidate_notes})
+    selected_deck = args.deck or deck_plan.get("recommendedDeck") or deck_plan.get("newDeckSuggested")
+    if args.add and not args.deck:
+        raise RuntimeError("--deck is required when using --add. Approve a proposed deck first.")
+
+    # Use explicit deck for duplicate checks in preview; avoid creating proposal decks implicitly.
+    check_deck = args.deck if args.deck else (selected_deck if args.add else None)
+
+    # Ensure deck exists only when needed for actual add/check path.
+    if check_deck:
+        anki_invoke("createDeck", {"deck": check_deck})
+
+    # Duplicate check preview (only if we have an explicit check deck)
+    can_add = [True] * len(rows)
+    if check_deck:
+        candidate_notes = [
+            note_payload(check_deck, args.model, r, sound_filename=None, allow_duplicates=args.allow_duplicates)
+            for r in rows
+        ]
+        can_add = anki_invoke("canAddNotes", {"notes": candidate_notes})
 
     print("# PREFLIGHT")
     print(json.dumps({
@@ -200,6 +268,9 @@ def main() -> int:
         "model": args.model,
         "modelFields": model_fields,
         "defaultLang": args.default_lang,
+        "detectedLanguage": lang,
+        "deckProposal": deck_plan,
+        "selectedDeck": selected_deck,
     }, ensure_ascii=False))
 
     print("\n# PREVIEW")
@@ -209,6 +280,9 @@ def main() -> int:
 
     if not args.add:
         return 0
+
+    if not selected_deck:
+        raise RuntimeError("No deck selected. Pass --deck after approving a proposed deck.")
 
     notes_to_add: list[dict[str, Any]] = []
     for i, row in enumerate(rows, start=1):
@@ -222,7 +296,7 @@ def main() -> int:
             {"filename": fname, "data": base64.b64encode(mp3).decode("ascii")},
         )
         notes_to_add.append(
-            note_payload(args.deck, args.model, row, sound_filename=fname, allow_duplicates=args.allow_duplicates)
+            note_payload(selected_deck, args.model, row, sound_filename=fname, allow_duplicates=args.allow_duplicates)
         )
 
     result = anki_invoke("addNotes", {"notes": notes_to_add}) if notes_to_add else []
@@ -230,7 +304,7 @@ def main() -> int:
         anki_invoke("sync")
 
     print("\n# RESULT")
-    print(json.dumps({"requested": len(rows), "attempted": len(notes_to_add), "added": sum(1 for x in result if x), "ids": result}, ensure_ascii=False))
+    print(json.dumps({"deck": selected_deck, "requested": len(rows), "attempted": len(notes_to_add), "added": sum(1 for x in result if x), "ids": result}, ensure_ascii=False))
     return 0
 
 
