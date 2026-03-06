@@ -1,0 +1,42 @@
+# Vocab formatting guidelines
+
+Use these defaults unless user overrides.
+
+## Field mapping
+- `Front`: lemma/base form.
+- `Back`: English meaning, then blank line, then extra grammar lines.
+- `example`: one concise target-language sentence.
+- `sound`: `[sound:*.mp3]` generated from `sound_text`.
+
+## Lemma normalization
+- Verb: infinitive (unconjugated).
+- Noun: singular nominative.
+- Adjective: masculine singular.
+- Multiword expression: canonical phrase (e.g., `крайний случай`).
+
+## Extra grammar block in `Back`
+Always separate meaning and extra block with one blank line.
+Use one item per line.
+
+### Verb
+- Add conjugation lines in present/future:
+  - я ...
+  - ты ...
+  - он/она ...
+  - мы ...
+  - вы ...
+  - они ...
+
+### Noun
+- Add plural line.
+
+### Adjective
+- Add feminine, neuter, plural lines.
+
+## Rendering rule
+If target note template collapses `\n` line breaks, use `<br>` and `<br><br>` in `Back`.
+
+## Language support
+- Russian TTS code: `ru`
+- Spanish TTS code: `es`
+- Allow per-row override using `sound_lang` column.
