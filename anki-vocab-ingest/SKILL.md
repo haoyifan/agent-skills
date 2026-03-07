@@ -15,6 +15,7 @@ Use this skill to run a strict **preview → approve → add** pipeline.
    - English meaning
    - blank line
    - extra grammar lines (one per line)
+   - if the card is a noun, include a picture in `Back` (image of your choice) in addition to the translation
 4. Generate one concise `example` sentence.
 5. Run preflight checks:
    - HyperTTS add-on installed
@@ -38,6 +39,8 @@ Optional columns:
 - `example`
 - `sound_text` (defaults to `Front`)
 - `sound_lang` (defaults to CLI `--default-lang`)
+- `pos` (e.g., `noun`, `verb`, `adjective`)
+- `back_image_url` (required if `pos=noun`; rendered in `Back`)
 
 ## Script
 

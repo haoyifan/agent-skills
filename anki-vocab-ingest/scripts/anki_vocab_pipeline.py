@@ -7,6 +7,8 @@ CSV columns:
 - example (optional)
 - sound_text (optional; defaults to Front)
 - sound_lang (optional; defaults to --default-lang)
+- pos (optional; e.g., noun/verb/adjective)
+- back_image_url (optional; required when pos=noun)
 
 Usage examples:
   # Preview only (no writes)
@@ -44,6 +46,8 @@ class Row:
     example: str
     sound_text: str
     sound_lang: str
+    pos: str
+    back_image_url: str
 
 
 def anki_invoke(action: str, params: dict[str, Any] | None = None) -> Any:
@@ -87,7 +91,13 @@ def load_rows(csv_path: Path, default_lang: str) -> list[Row]:
             example = (r.get("example") or "").strip()
             sound_text = (r.get("sound_text") or front).strip()
             sound_lang = (r.get("sound_lang") or default_lang).strip()
-            rows.append(Row(front, back, example, sound_text, sound_lang))
+            pos = (r.get("pos") or "").strip().lower()
+            back_image_url = (r.get("back_image_url") or "").strip()
+
+            if pos == "noun" and not back_image_url:
+                raise ValueError(f"Row {i}: nouns must include back_image_url")
+
+            rows.append(Row(front, back, example, sound_text, sound_lang, pos, back_image_url))
     return rows
 
 
@@ -139,6 +149,12 @@ def verify_model_fields(model: str) -> list[str]:
     return fields
 
 
+def render_back(row: Row) -> str:
+    if row.pos == "noun" and row.back_image_url:
+        return f"{row.back}<br><br><img src=\"{row.back_image_url}\" alt=\"{row.front}\" style=\"max-width:260px;\">"
+    return row.back
+
+
 def note_payload(deck: str, model: str, row: Row, sound_filename: str | None, allow_duplicates: bool) -> dict[str, Any]:
     sound_value = f"[sound:{sound_filename}]" if sound_filename else ""
     return {
@@ -146,7 +162,7 @@ def note_payload(deck: str, model: str, row: Row, sound_filename: str | None, al
         "modelName": model,
         "fields": {
             "Front": row.front,
-            "Back": row.back,
+            "Back": render_back(row),
             "example": row.example,
             "sound": sound_value,
         },
@@ -156,9 +172,9 @@ def note_payload(deck: str, model: str, row: Row, sound_filename: str | None, al
 
 def print_preview(rows: list[Row]) -> None:
     writer = csv.writer(sys.stdout)
-    writer.writerow(["Front", "Back", "example", "sound_text", "sound_lang"])
+    writer.writerow(["Front", "Back", "example", "sound_text", "sound_lang", "pos", "back_image_url"])
     for r in rows:
-        writer.writerow([r.front, r.back, r.example, r.sound_text, r.sound_lang])
+        writer.writerow([r.front, r.back, r.example, r.sound_text, r.sound_lang, r.pos, r.back_image_url])
 
 
 def dominant_lang(rows: list[Row], fallback: str) -> str:
