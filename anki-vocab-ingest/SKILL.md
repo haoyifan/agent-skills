@@ -23,7 +23,9 @@ Use this skill to run a strict **preview → approve → add** pipeline.
    - target note model has `Front`, `Back`, `example`, `sound`
 6. Inspect existing Anki decks and propose the best target deck for the batch.
    - If no good match exists, propose a new deck name.
-7. Build a CSV preview, save it as a `.csv` file, and send/share that file path for user review (columns must stay separate for spreadsheet review on laptop).
+7. Build a CSV preview and save it as a `.csv` file.
+   - In chat surfaces (Telegram/WhatsApp/etc.), send the CSV as a file attachment to the user for review (do not only paste inline text).
+   - Also include the local file path as fallback.
 8. Add cards only after explicit approval of content and deck.
 9. Generate audio with row-level language (`sound_lang`) and populate `sound`, then sync.
 
