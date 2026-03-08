@@ -150,10 +150,26 @@ def verify_model_fields(model: str) -> list[str]:
     return fields
 
 
+GRAMMAR_LABEL_RE = re.compile(
+    r"^(noun|verb|adjective|adverb|abbreviation|set phrase|sentence pattern|proper noun|plural noun phrase|noun phrase|verb phrase|past phrase|perfect infinitive phrase)([, ].*)?$",
+    re.IGNORECASE,
+)
+
+
+def strip_grammar_labels(back_html: str) -> str:
+    # Normalize and remove descriptor-only lines such as "noun, masculine".
+    parts = [p.strip() for p in back_html.split("<br>")]
+    kept = [p for p in parts if p and not GRAMMAR_LABEL_RE.match(p)]
+    if not kept:
+        return back_html.strip()
+    return "<br>".join(kept)
+
+
 def render_back(row: Row) -> str:
+    clean_back = strip_grammar_labels(row.back)
     if row.pos == "noun" and row.back_image_url:
-        return f"{row.back}<br><br><img src=\"{row.back_image_url}\" alt=\"{row.front}\" width=\"260\">"
-    return row.back
+        return f"{clean_back}<br><br><img src=\"{row.back_image_url}\" alt=\"{row.front}\" width=\"260\">"
+    return clean_back
 
 
 def localize_back_images(back_html: str, key_prefix: str) -> str:

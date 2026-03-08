@@ -12,9 +12,8 @@ Use this skill to run a strict **preview → approve → add** pipeline.
 1. Collect source vocab (text, lesson notes, OCR from image).
 2. Normalize each item into lemma/base form for `Front`.
 3. Generate `Back` with:
-   - English meaning
-   - blank line
-   - extra grammar lines (one per line)
+   - English meaning only (clean translation line)
+   - no POS/grammar labels (e.g., do not add “noun, masculine”, “adjective”, “set phrase”)
    - if the card is a noun, include a picture in `Back` in addition to the translation
    - picture relevance rule: image must clearly depict the noun/phrase meaning (not generic filler)
    - image selection rule: browse candidates and evaluate up to 20 images before final selection; pick the most semantically relevant and visually clear option

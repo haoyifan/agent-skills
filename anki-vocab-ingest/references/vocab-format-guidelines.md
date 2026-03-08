@@ -4,7 +4,8 @@ Use these defaults unless user overrides.
 
 ## Field mapping
 - `Front`: lemma/base form.
-- `Back`: English meaning, then blank line, then extra grammar lines. For nouns, append an image (`<img ...>`) using `back_image_url`.
+- `Back`: English meaning only. Do not append POS/grammar label lines (e.g., noun/verb/adjective notes).
+- For nouns, append an image (`<img ...>`) using `back_image_url`.
 - `example`: one concise target-language sentence.
 - `sound`: `[sound:*.mp3]` generated from `sound_text`.
 
