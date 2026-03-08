@@ -25,6 +25,7 @@ import base64
 import csv
 import json
 import os
+import re
 import sys
 import time
 import urllib.parse
@@ -151,8 +152,29 @@ def verify_model_fields(model: str) -> list[str]:
 
 def render_back(row: Row) -> str:
     if row.pos == "noun" and row.back_image_url:
-        return f"{row.back}<br><br><img src=\"{row.back_image_url}\" alt=\"{row.front}\" style=\"max-width:260px;\">"
+        return f"{row.back}<br><br><img src=\"{row.back_image_url}\" alt=\"{row.front}\" width=\"260\">"
     return row.back
+
+
+def localize_back_images(back_html: str, key_prefix: str) -> str:
+    pattern = re.compile(r'<img\s+[^>]*src="(https?://[^"]+)"[^>]*>', re.IGNORECASE)
+
+    def repl(match: re.Match[str]) -> str:
+        url = match.group(1)
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = resp.read()
+            ext = Path(urllib.parse.urlparse(url).path).suffix.lower() or ".jpg"
+            if ext not in {".jpg", ".jpeg", ".png", ".webp", ".gif"}:
+                ext = ".jpg"
+            fname = f"{key_prefix}_{int(time.time()*1000)}{ext}"
+            anki_invoke("storeMediaFile", {"filename": fname, "data": base64.b64encode(data).decode("ascii")})
+            return match.group(0).replace(url, fname)
+        except Exception:
+            return match.group(0)
+
+    return pattern.sub(repl, back_html)
 
 
 def note_payload(deck: str, model: str, row: Row, sound_filename: str | None, allow_duplicates: bool) -> dict[str, Any]:
@@ -331,9 +353,9 @@ def main() -> int:
             "storeMediaFile",
             {"filename": fname, "data": base64.b64encode(mp3).decode("ascii")},
         )
-        notes_to_add.append(
-            note_payload(selected_deck, args.model, row, sound_filename=fname, allow_duplicates=args.allow_duplicates)
-        )
+        note = note_payload(selected_deck, args.model, row, sound_filename=fname, allow_duplicates=args.allow_duplicates)
+        note["fields"]["Back"] = localize_back_images(note["fields"]["Back"], f"img_{i}")
+        notes_to_add.append(note)
 
     result = anki_invoke("addNotes", {"notes": notes_to_add}) if notes_to_add else []
     if args.sync:
