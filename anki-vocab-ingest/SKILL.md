@@ -23,9 +23,7 @@ Use this skill to run a strict **preview → approve → add** pipeline.
    - target note model has `Front`, `Back`, `example`, `sound`
 6. Inspect existing Anki decks and propose the best target deck for the batch.
    - If no good match exists, propose a new deck name.
-7. Build a CSV preview and save it as a `.csv` file.
-   - In chat surfaces (Telegram/WhatsApp/etc.), send the CSV as a file attachment to the user for review (do not only paste inline text).
-   - Also include the local file path as fallback.
+7. Build a CSV preview and share it for review (inline preview in chat is acceptable).
 8. Add cards only after explicit approval of content and deck.
 9. Generate audio with row-level language (`sound_lang`) and populate `sound`, then sync.
 
@@ -52,11 +50,8 @@ Use `scripts/anki_vocab_pipeline.py`.
 
 ```bash
 python3 scripts/anki_vocab_pipeline.py \
-  --csv ./preview.csv \
-  --preview-out ./preview.out.csv
+  --csv ./preview.csv
 ```
-
-Always share `--preview-out` file with the user for approval before any add/sync.
 
 ### Add + sync (deck must be explicit after approval)
 
