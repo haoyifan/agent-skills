@@ -15,7 +15,9 @@ Use this skill to run a strict **preview → approve → add** pipeline.
    - English meaning
    - blank line
    - extra grammar lines (one per line)
-   - if the card is a noun, include a picture in `Back` (image of your choice) in addition to the translation
+   - if the card is a noun, include a picture in `Back` in addition to the translation
+   - picture relevance rule: image must clearly depict the noun/phrase meaning (not generic filler)
+   - image selection rule: browse candidates and evaluate up to 20 images before final selection; pick the most semantically relevant and visually clear option
 4. Generate one concise `example` sentence.
 5. Run preflight checks:
    - HyperTTS add-on installed

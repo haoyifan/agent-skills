@@ -29,7 +29,9 @@ Use one item per line.
 
 ### Noun
 - Add plural line.
-- Include an image in `Back` (image of your choice) along with translation.
+- Include an image in `Back` along with translation.
+- Relevance requirement: image should directly represent the noun meaning (object/person/place/concept) and avoid unrelated stock photos.
+- Selection process: review candidate images and evaluate up to 20 options before choosing one.
 - Use CSV `back_image_url` and render as HTML image in `Back`.
 
 ### Adjective
