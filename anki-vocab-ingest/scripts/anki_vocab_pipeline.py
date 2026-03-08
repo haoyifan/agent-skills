@@ -170,11 +170,25 @@ def note_payload(deck: str, model: str, row: Row, sound_filename: str | None, al
     }
 
 
+def _preview_rows(rows: list[Row]) -> list[list[str]]:
+    out = [["Front", "Back", "example", "sound_text", "sound_lang", "pos", "back_image_url"]]
+    for r in rows:
+        out.append([r.front, r.back, r.example, r.sound_text, r.sound_lang, r.pos, r.back_image_url])
+    return out
+
+
 def print_preview(rows: list[Row]) -> None:
     writer = csv.writer(sys.stdout)
-    writer.writerow(["Front", "Back", "example", "sound_text", "sound_lang", "pos", "back_image_url"])
-    for r in rows:
-        writer.writerow([r.front, r.back, r.example, r.sound_text, r.sound_lang, r.pos, r.back_image_url])
+    for row in _preview_rows(rows):
+        writer.writerow(row)
+
+
+def write_preview_csv(rows: list[Row], out_path: Path) -> None:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with out_path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        for row in _preview_rows(rows):
+            writer.writerow(row)
 
 
 def dominant_lang(rows: list[Row], fallback: str) -> str:
@@ -241,6 +255,7 @@ def main() -> int:
     p.add_argument("--sync", action="store_true", help="Run Anki sync after add")
     p.add_argument("--allow-duplicates", action="store_true", help="Allow duplicate notes")
     p.add_argument("--fix-hypertts-config", action="store_true", help="Auto-enable HyperTTS GoogleTranslate config if disabled")
+    p.add_argument("--preview-out", help="Optional path to also write preview CSV file for user review")
     args = p.parse_args()
 
     rows = load_rows(Path(args.csv), args.default_lang)
@@ -291,6 +306,11 @@ def main() -> int:
 
     print("\n# PREVIEW")
     print_preview(rows)
+    if args.preview_out:
+        preview_path = Path(args.preview_out)
+        write_preview_csv(rows, preview_path)
+        print("\n# PREVIEW_FILE")
+        print(json.dumps({"path": str(preview_path.resolve())}, ensure_ascii=False))
     print("\n# CHECK")
     print(json.dumps({"total": len(rows), "addable": int(sum(1 for x in can_add if x)), "blocked": int(sum(1 for x in can_add if not x))}, ensure_ascii=False))
 
