@@ -48,6 +48,34 @@ When uncertain, bias slightly easier rather than too hard.
    - Example Spanish set: `es-ES`, `es-MX`, `es-US`
 4. If randomization is enabled, report the chosen locale in output.
 
+## Content variety rules (mandatory)
+
+Do not generate the same style every day. Rotate both **format** and **topic** while preserving `target_level`.
+
+### Format rotation examples
+
+Use a varied mix across runs, such as:
+- Authentic conversation / dialogue
+- Short article / explainer
+- Interview Q&A
+- Personal story / diary entry
+- News brief / current events summary
+- Opinion + counterpoint
+- Practical guide (how-to)
+
+### Topic rotation examples
+
+Rotate across broad domains, such as:
+- Daily life / relationships
+- Work / study / productivity
+- Culture / history / society
+- Technology / internet trends
+- Health / habits / psychology
+- Travel / food / city life
+- Economy / environment / public policy
+
+Avoid repeating nearly identical format-topic pairs on consecutive days unless the user asks.
+
 ## Delivery workflow
 
 1. Generate pack text content.
@@ -69,6 +97,8 @@ Always return these fields:
 - `AUDIO_SENT_TO_TELEGRAM:` (or channel equivalent)
 - `LOCALE_USED:`
 - `LEVEL_USED:`
+- `FORMAT_USED:`
+- `TOPIC_USED:`
 
 If audio fails, return `AUDIO_FAILED:` with exact reason.
 
