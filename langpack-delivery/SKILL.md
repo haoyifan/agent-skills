@@ -34,10 +34,15 @@ Generate content to match `target_level` difficulty.
 - **C1–C2**: dense authentic style, nuanced register, complex syntax, advanced discourse markers.
 
 For every pack include:
-1. Main text/article at the target level.
-2. Translation notes focused on level-appropriate items (not random rare words).
+1. Main text/article at the target level (target language only).
+2. Plain English translation of the whole text (natural paragraph form).
 3. Potentially new / common vocabulary and translation from the text.
 4. Passage selected from the same text for audio, also level-aligned.
+
+Translation style rule:
+- Do **not** send line-by-line bilingual pairs in chat.
+- Do **not** repeat each target-language sentence next to an English sentence.
+- Send one clean target-language section, then one plain English translation section.
 
 When uncertain, bias slightly easier rather than too hard.
 
@@ -84,10 +89,13 @@ Avoid repeating nearly identical format-topic pairs on consecutive days unless t
    - `langpack-<lang>-YYYY-MM-DD.txt`
    - `langpack-<lang>-latest.txt`
 3. Generate passage audio using locale-aware TTS.
-4. Send text message first.
+4. Send text message first using this **chat-facing content contract**:
+   - Include only: (a) target-language text, (b) plain English translation, (c) optional vocab list.
+   - Exclude internal metadata/status from chat text (`WROTE_FILES`, `SENT_TO_TELEGRAM`, `AUDIO_SENT_TO_TELEGRAM`, `LOCALE_USED`, `LEVEL_USED`, etc.).
+   - Exclude pedagogy/meta labels like `A1 focus` in chat text.
 5. Send audio second.
    - If media-path restrictions block file send, use attachment `buffer` fallback.
-6. Return explicit status block.
+6. Return explicit status block (internal agent reply, not user-facing pack text).
 
 ## Required status output
 
