@@ -19,9 +19,26 @@ Do not perform Anki card generation here. Hand off extracted vocab to `anki-voca
 ## Inputs
 
 - `target_lang` (e.g., `ru`, `es`, `de`, `fr`, `ko`)
+- `target_level` (required proficiency target: `A1`, `A2`, `B1`, `B2`, `C1`, `C2`)
 - `target_chat` (default user chat)
 - `date` (default today in user timezone)
 - optional `locale_policy` (fixed locale or random from approved locale list)
+
+## Level-based generation rules (mandatory)
+
+Generate content to match `target_level` difficulty.
+
+- **A1–A2**: short sentences, high-frequency vocabulary, minimal idioms, clear literal phrasing.
+- **B1**: everyday + work/study themes, some connectors, moderate sentence length.
+- **B2**: richer argumentation, abstract themes, wider synonym range, natural idioms in moderation.
+- **C1–C2**: dense authentic style, nuanced register, complex syntax, advanced discourse markers.
+
+For every pack include:
+1. Main text/article at the target level.
+2. Translation notes focused on level-appropriate items (not random rare words).
+3. Passage selected from the same text for audio, also level-aligned.
+
+When uncertain, bias slightly easier rather than too hard.
 
 ## Locale-aware audio rules (mandatory)
 
@@ -51,6 +68,7 @@ Always return these fields:
 - `SENT_TO_TELEGRAM:` (or channel equivalent)
 - `AUDIO_SENT_TO_TELEGRAM:` (or channel equivalent)
 - `LOCALE_USED:`
+- `LEVEL_USED:`
 
 If audio fails, return `AUDIO_FAILED:` with exact reason.
 
