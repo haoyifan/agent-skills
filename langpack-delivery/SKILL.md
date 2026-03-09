@@ -1,6 +1,6 @@
 ---
 name: langpack-delivery
-description: Generate and deliver daily language packs (article + translation notes + passage audio) to messaging channels. Use for Russian/Spanish packs and generalized multilingual packs. Includes locale-aware TTS rules, reporting fields, and safe message delivery workflow.
+description: Generate and deliver daily language packs (article + translation notes + passage audio) to messaging channels for language immersion.
 ---
 
 # Langpack Delivery
@@ -36,7 +36,8 @@ Generate content to match `target_level` difficulty.
 For every pack include:
 1. Main text/article at the target level.
 2. Translation notes focused on level-appropriate items (not random rare words).
-3. Passage selected from the same text for audio, also level-aligned.
+3. Potentially new / common vocabulary and translation from the text.
+4. Passage selected from the same text for audio, also level-aligned.
 
 When uncertain, bias slightly easier rather than too hard.
 
