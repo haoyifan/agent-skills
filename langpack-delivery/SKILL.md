@@ -49,28 +49,20 @@ When uncertain, bias slightly easier rather than too hard.
 ## Locale-aware audio rules (mandatory)
 
 1. Always use locale(s) compatible with `target_lang`.
-2. Never reuse Russian locale for non-Russian content.
-3. For language variants, choose locale from an approved set.
-   - Example Spanish set: `es-ES`, `es-MX`, `es-US`
-4. If randomization is enabled, report the chosen locale in output.
+2. Never reuse locale from an unrelated language.
+3. Validate generated audio before send (`exists`, non-empty; recommended >2KB).
+4. If synthesis fails, fallback within the same language family.
+5. Never send known-empty audio files.
 
-### Levantine Arabic audio policy (mandatory when `target_lang=ar-levantine`)
+## Language-specific rules loading (mandatory)
 
-Use a reliability-first ladder because dialect TTS can fail silently.
+Keep `SKILL.md` language-agnostic.
 
-1. Keep two text forms:
-   - `display_text`: user-facing Levantine text (for chat)
-   - `tts_text`: normalized Levantine/MSA-leaning form for synthesis
-2. Prefer short, clearly punctuated sentences in `tts_text`.
-3. Attempt synthesis in this order:
-   - Levantine-capable Arabic locale/voice (`ar-LB` or closest available)
-   - MSA-friendly Arabic voice (`ar-SA`)
-   - generic Arabic (`ar`)
-4. Validate generated audio before send:
-   - file exists
-   - file size > 0 bytes (recommended threshold > 2KB)
-5. If invalid/empty, retry next fallback locale/provider before Telegram send.
-6. Keep chat content in Levantine regardless of fallback audio variant.
+When processing language-specific behavior (accent selection, dialect handling, locale fallback), read:
+- `references/language-rules.md`
+
+Load only the section that matches the active `target_lang`.
+Do not load unrelated language sections.
 
 ## Content variety rules (mandatory)
 
@@ -126,7 +118,7 @@ Always return these fields:
 - `LEVEL_USED:`
 - `FORMAT_USED:`
 - `TOPIC_USED:`
-- `AUDIO_VARIANT_USED:` (`native-levantine` | `normalized-levantine` | `msa-fallback`)
+- `AUDIO_VARIANT_USED:` (e.g., `primary-locale` | `fallback-locale`)
 
 If audio fails, return `AUDIO_FAILED:` with exact reason.
 
