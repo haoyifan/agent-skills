@@ -54,6 +54,24 @@ When uncertain, bias slightly easier rather than too hard.
    - Example Spanish set: `es-ES`, `es-MX`, `es-US`
 4. If randomization is enabled, report the chosen locale in output.
 
+### Levantine Arabic audio policy (mandatory when `target_lang=ar-levantine`)
+
+Use a reliability-first ladder because dialect TTS can fail silently.
+
+1. Keep two text forms:
+   - `display_text`: user-facing Levantine text (for chat)
+   - `tts_text`: normalized Levantine/MSA-leaning form for synthesis
+2. Prefer short, clearly punctuated sentences in `tts_text`.
+3. Attempt synthesis in this order:
+   - Levantine-capable Arabic locale/voice (`ar-LB` or closest available)
+   - MSA-friendly Arabic voice (`ar-SA`)
+   - generic Arabic (`ar`)
+4. Validate generated audio before send:
+   - file exists
+   - file size > 0 bytes (recommended threshold > 2KB)
+5. If invalid/empty, retry next fallback locale/provider before Telegram send.
+6. Keep chat content in Levantine regardless of fallback audio variant.
+
 ## Content variety rules (mandatory)
 
 Do not generate the same style every day. Rotate both **format** and **topic** while preserving `target_level`.
@@ -108,14 +126,17 @@ Always return these fields:
 - `LEVEL_USED:`
 - `FORMAT_USED:`
 - `TOPIC_USED:`
+- `AUDIO_VARIANT_USED:` (`native-levantine` | `normalized-levantine` | `msa-fallback`)
 
 If audio fails, return `AUDIO_FAILED:` with exact reason.
 
 ## Reliability policy
 
 - Validate TTS result is non-empty before send.
-- If primary TTS fails/empty, use fallback TTS path and retry send.
+- For robust delivery, enforce local validation gates (`exists`, non-empty size; ideally >2KB).
+- If primary TTS fails/empty, use fallback locale/provider path and retry send.
 - Keep text delivery independent from audio delivery (audio failure must not block text).
+- Never send a known-empty audio file to Telegram.
 
 ## Notes
 
