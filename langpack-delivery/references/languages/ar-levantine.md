@@ -1,15 +1,4 @@
-# Language-Specific Rules
-
-Read this file **only** when processing a language pack for a matching language.
-
-## Spanish (`es`)
-
-Apply Spanish accent/locale randomization for audio:
-- Randomize one locale per run from: `es-ES`, `es-MX`, `es-US`
-- Use selected locale consistently for TTS in that run
-- Report chosen locale in internal status (`LOCALE_USED`)
-
-## Arabic - Levantine target (`ar-levantine`)
+# Levantine Arabic (`ar-levantine`) Rules
 
 Use dialect text for displayed learning content, but keep audio reliability strict.
 

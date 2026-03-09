@@ -58,11 +58,12 @@ When uncertain, bias slightly easier rather than too hard.
 
 Keep `SKILL.md` language-agnostic.
 
-When processing language-specific behavior (accent selection, dialect handling, locale fallback), read:
-- `references/language-rules.md`
+When processing language-specific behavior (accent selection, dialect handling, locale fallback), read only the matching file:
+- Spanish: `references/languages/es.md`
+- Levantine Arabic: `references/languages/ar-levantine.md`
 
-Load only the section that matches the active `target_lang`.
-Do not load unrelated language sections.
+If no language-specific file exists for `target_lang`, proceed with only the generic rules in this SKILL.
+Do not load unrelated language files.
 
 ## Content variety rules (mandatory)
 
