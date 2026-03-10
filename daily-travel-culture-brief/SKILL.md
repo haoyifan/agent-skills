@@ -19,7 +19,7 @@ Create one concise daily brief for Pringles.
 - If fully self-generated, include **3-5 factual reference URLs** from reputable sources.
 - Always include a **Photos** section with at least **2 image URLs** relevant to today’s place/culture.
 - Prefer photo URLs from reputable/open sources (official tourism boards, Wikimedia Commons, museum sites, Unsplash/Pexels pages, etc.).
-- End with one friendly question for reflection.
+- Do not add a closing question.
 
 ## Source-first workflow (default)
 
@@ -74,8 +74,6 @@ Preference handling rules:
 **Photos:**
 - <photo url 1>
 - <photo url 2>
-
-**Question for Pringles:** <one engaging question>
 
 ## Final check before sending
 
