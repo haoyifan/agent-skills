@@ -17,6 +17,8 @@ Create one concise daily brief for Pringles.
   - **1 primary source article URL** from a trusted travel/culture site when source-based, plus
   - **2-4 supporting reference URLs**.
 - If fully self-generated, include **3-5 factual reference URLs** from reputable sources.
+- Always include a **Photos** section with at least **2 image URLs** relevant to today’s place/culture.
+- Prefer photo URLs from reputable/open sources (official tourism boards, Wikimedia Commons, museum sites, Unsplash/Pexels pages, etc.).
 - End with one friendly question for reflection.
 
 ## Source-first workflow (default)
@@ -60,11 +62,16 @@ Create one concise daily brief for Pringles.
 - <url 2 optional>
 - <url 3 optional>
 
+**Photos:**
+- <photo url 1>
+- <photo url 2>
+
 **Question for Pringles:** <one engaging question>
 
 ## Final check before sending
 
 - Did you include a **Links:** header?
-- Are there at least **3 total URLs**?
+- Are there at least **3 total URLs** in Links?
 - Is the **first URL** the primary article (when source-based)?
-- Are all links concrete and relevant to today’s pick?
+- Did you include a **Photos:** header with at least **2 photo URLs**?
+- Are all links/photos concrete and relevant to today’s pick?
