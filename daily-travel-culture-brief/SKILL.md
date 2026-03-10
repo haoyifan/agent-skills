@@ -41,6 +41,22 @@ Create one concise daily brief for Pringles.
 2. Write an original mini-brief.
 3. Add 2-4 reputable references for factual grounding.
 
+## Audience preference (important)
+
+Prioritize places/cultures that are comparatively less traveled by mainstream tourism but rich in historical and cultural roots.
+
+Preferred regions to over-index:
+- Central Asia
+- Arabic-speaking world / Middle East & North Africa
+- Africa
+- Southeast Asia
+- Latin America
+
+Balance rule:
+- Use preferred-region picks most days.
+- Avoid over-sending globally obvious/top-tourist staples unless used sparingly for contrast.
+- If a popular destination is selected, choose a deep, less-covered cultural angle rather than generic highlights.
+
 ## Style
 
 - Warm, playful, curious.
@@ -75,3 +91,4 @@ Create one concise daily brief for Pringles.
 - Is the **first URL** the primary article (when source-based)?
 - Did you include a **Photos:** header with at least **2 photo URLs**?
 - Are all links/photos concrete and relevant to today’s pick?
+- Does today’s pick follow the preferred-region balance toward under-covered, culture-rich destinations?
