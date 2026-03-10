@@ -12,9 +12,11 @@ Create one concise daily brief for Pringles.
 - Keep to ~120-220 words total.
 - Include exactly one featured place or culture topic.
 - Include a short “Why it’s interesting” angle.
-- Include either:
-  - **Source article link** (preferred), or
-  - **2-4 reference links** if self-generated.
+- Always include a **Links** section.
+- In **Links**, include:
+  - **1 primary source article URL** from a trusted travel/culture site when source-based, plus
+  - **2-4 supporting reference URLs**.
+- If fully self-generated, include **3-5 factual reference URLs** from reputable sources.
 - End with one friendly question for reflection.
 
 ## Source-first workflow (default)
@@ -28,7 +30,8 @@ Create one concise daily brief for Pringles.
    - UNESCO World Heritage
 2. Pick one article with concrete cultural/place detail (not generic listicles if avoidable).
 3. Read and summarize accurately in your own words.
-4. Add the original article URL.
+4. Add the original article URL as the first link.
+5. Add 2-4 supporting reference links (official tourism board, UNESCO, encyclopedia, museum, etc.).
 
 ## Fallback workflow (if source quality is weak)
 
@@ -58,3 +61,10 @@ Create one concise daily brief for Pringles.
 - <url 3 optional>
 
 **Question for Pringles:** <one engaging question>
+
+## Final check before sending
+
+- Did you include a **Links:** header?
+- Are there at least **3 total URLs**?
+- Is the **first URL** the primary article (when source-based)?
+- Are all links concrete and relevant to today’s pick?
