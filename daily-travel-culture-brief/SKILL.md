@@ -75,11 +75,24 @@ Preference handling rules:
 - <photo url 1>
 - <photo url 2>
 
+## Delivery completion contract (required)
+
+After attempting delivery, always emit a machine-checkable status block at the end of your final response:
+
+`DELIVERY_STATUS: SENT_TEXT_OK | SENT_PHOTO_1_OK | SENT_PHOTO_2_OK`
+
+If any step fails, replace the failed token with a failure token and short reason, for example:
+
+`DELIVERY_STATUS: SENT_TEXT_OK | PHOTO_1_FAILED(404) | SENT_PHOTO_2_OK`
+
+Do not claim success for a photo unless an actual media message was sent successfully.
+
 ## Final check before sending
 
 - Did you include a **Links:** header?
 - Are there at least **3 total URLs** in Links?
 - Is the **first URL** the primary article (when source-based)?
-- Did you include a **Photos:** header with at least **2 photo URLs**?
+- Did you include at least **2 valid photo sources** for media send?
 - Are all links/photos concrete and relevant to today’s pick?
 - Did you honor any caller-provided preference and balancing instructions?
+- Did your final response include the `DELIVERY_STATUS:` line?
