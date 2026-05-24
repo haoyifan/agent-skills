@@ -1,3 +1,10 @@
+---
+name: dev-team
+description: Orchestrate a multi-agent development loop with bootstrap planning, parallel review gates, and serialized testing against a design doc.
+metadata:
+  short-description: Multi-agent project implementation from a design doc
+---
+
 # Skill: dev-team
 
 Multi-agent development team orchestration. Coordinates a Developer, two
