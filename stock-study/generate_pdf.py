@@ -95,9 +95,10 @@ class StockReport(FPDF):
 
         self.set_y(56)
 
-    def add_section_header(self, title):
-        self.ln(2)
-        if self.get_y() > 265:
+    def add_section_header(self, title, new_page=False):
+        if new_page:
+            self.add_page()
+        elif self.get_y() > 265:
             self.add_page()
         self.set_fill_color(*self.MEDIUM_BLUE)
         self.set_font("Helvetica", "B", 10)
@@ -109,6 +110,47 @@ class StockReport(FPDF):
         self.set_font("Helvetica", "", 9.5)
         self.set_text_color(*self.BLACK)
         self.multi_cell(190, 5, sanitize(text))
+        self.ln(1)
+
+    def add_subsection_header(self, title):
+        if self.get_y() > 265:
+            self.add_page()
+        self.set_fill_color(*self.LIGHT_BLUE)
+        self.set_font("Helvetica", "B", 9)
+        self.set_text_color(*self.DARK_BLUE)
+        self.cell(190, 6, sanitize(f"  {title}"), fill=True, new_x="LMARGIN", new_y="NEXT")
+        self.ln(1)
+
+    def add_subsection_header_with_url(self, title, url=None):
+        self.add_subsection_header(title)
+        if url:
+            self.set_font("Helvetica", "", 7.5)
+            self.set_text_color(*self.MEDIUM_BLUE)
+            self.cell(190, 4, sanitize(f"  {url}"), link=url, new_x="LMARGIN", new_y="NEXT")
+            self.ln(1)
+            self.set_text_color(*self.BLACK)
+
+    def add_labeled_text(self, label, text):
+        self.set_font("Helvetica", "B", 8.5)
+        self.set_text_color(*self.DARK_BLUE)
+        self.cell(0, 5, sanitize(f"{label} "), new_x="LMARGIN", new_y="NEXT")
+        self.add_paragraph(text)
+
+    def add_segment_detail(self, segment):
+        if self.get_y() > 250:
+            self.add_page()
+
+        self.add_subsection_header_with_url(segment.get("name", "Segment"), segment.get("url"))
+
+        if segment.get("products"):
+            self.add_labeled_text("Products:", segment["products"])
+
+        if segment.get("metrics"):
+            self.add_kv_table(segment["metrics"], cols=2)
+
+        if segment.get("outlook"):
+            self.add_labeled_text("Outlook:", segment["outlook"])
+
         self.ln(1)
 
     def add_table(self, headers, rows, col_widths=None, first_col_align="L"):
@@ -176,9 +218,82 @@ class StockReport(FPDF):
         self.set_text_color(*self.BLACK)
         self.ln(1)
 
-    def add_two_column_section(self, left_title, left_items, right_title, right_items):
-        self.ln(2)
-        if self.get_y() > 245:
+    def add_risk_sentiment_section(self):
+        has_tables = self.data.get("ownership") or self.data.get("analyst_consensus")
+        has_prose = (
+            self.data.get("sentiment_analysis")
+            or self.data.get("key_risks")
+            or self.data.get("catalysts")
+            or self.data.get("risks_catalysts")
+        )
+        if not has_tables and not has_prose:
+            return
+
+        self.add_section_header("Risk, Catalysts & Market Sentiment")
+
+        if self.data.get("ownership") and self.data.get("analyst_consensus"):
+            self.add_two_column_section(
+                "Ownership & Sentiment",
+                self.data["ownership"],
+                "Analyst Consensus",
+                self.data["analyst_consensus"],
+            )
+        else:
+            if self.data.get("ownership"):
+                self.add_subsection_header("Ownership & Sentiment")
+                self.add_kv_table(self.data["ownership"], cols=2)
+            if self.data.get("analyst_consensus"):
+                self.add_subsection_header("Analyst Consensus")
+                self.add_kv_table(self.data["analyst_consensus"], cols=2)
+
+        if self.data.get("sentiment_analysis"):
+            self.add_labeled_text("Sentiment Analysis:", self.data["sentiment_analysis"])
+        if self.data.get("key_risks"):
+            self.add_labeled_text("Key Risks:", self.data["key_risks"])
+        if self.data.get("catalysts"):
+            self.add_labeled_text("Catalysts:", self.data["catalysts"])
+        elif self.data.get("risks_catalysts") and not (
+            self.data.get("key_risks") or self.data.get("catalysts")
+        ):
+            self.add_labeled_text("Risks & Catalysts:", self.data["risks_catalysts"])
+
+    def add_references(self):
+        refs = self.data.get("references")
+        if not refs:
+            return
+
+        self.add_page()
+        self.add_section_header("References")
+        for ref in refs:
+            if self.get_y() > 270:
+                self.add_page()
+
+            ref_id = ref[0]
+            title = ref[1] if len(ref) > 1 else ""
+            url = ref[2] if len(ref) > 2 else ""
+
+            self.set_font("Helvetica", "B", 8.5)
+            self.set_text_color(*self.DARK_BLUE)
+            self.cell(10, 5, sanitize(f"[{ref_id}]"), new_x="END")
+
+            self.set_font("Helvetica", "", 8.5)
+            self.set_text_color(*self.BLACK)
+            self.cell(0, 5, sanitize(f" {title}"), new_x="LMARGIN", new_y="NEXT")
+
+            if url:
+                self.set_font("Helvetica", "", 7.5)
+                self.set_text_color(*self.MEDIUM_BLUE)
+                self.set_x(20)
+                self.cell(180, 4, sanitize(url), link=url, new_x="LMARGIN", new_y="NEXT")
+                self.ln(1)
+                self.set_text_color(*self.BLACK)
+
+        self.ln(1)
+
+    def add_two_column_section(self, left_title, left_items, right_title, right_items, new_page=False):
+        if new_page:
+            self.add_page()
+        elif self.get_y() > 245:
             self.add_page()
 
         y_start = self.get_y()
@@ -233,17 +348,105 @@ class StockReport(FPDF):
         self.add_section_header("Business Overview")
         self.add_paragraph(self.data.get("business_overview", "N/A"))
 
+        # Business Segments & Product Lines
+        if self.data.get("segment_summary") or self.data.get("segment_details"):
+            self.add_section_header("Business Segments & Product Lines")
+            if self.data.get("segment_overview"):
+                self.add_paragraph(self.data["segment_overview"])
+            if self.data.get("segment_summary"):
+                summary = self.data["segment_summary"]
+                headers = summary[0]
+                rows = summary[1:]
+                if len(headers) == 5:
+                    col_widths = [52, 34, 30, 30, 24]
+                elif len(headers) == 4:
+                    col_widths = [60, 44, 44, 42]
+                else:
+                    col_widths = None
+                self.add_table(headers, rows, col_widths=col_widths)
+            for segment in self.data.get("segment_details", []):
+                self.add_segment_detail(segment)
+
+        # Competitors & Industry Landscape
+        if self.data.get("competitor_summary") or self.data.get("industry_overview"):
+            self.add_section_header("Competitors & Industry Landscape")
+            if self.data.get("industry_overview"):
+                self.add_paragraph(self.data["industry_overview"])
+            if self.data.get("competitor_summary"):
+                summary = self.data["competitor_summary"]
+                headers = summary[0]
+                rows = summary[1:]
+                if len(headers) == 5:
+                    col_widths = [34, 30, 26, 48, 52]
+                else:
+                    col_widths = None
+                self.add_table(headers, rows, col_widths=col_widths)
+            if self.data.get("competitive_assessment"):
+                self.add_labeled_text("Assessment:", self.data["competitive_assessment"])
+
+        # Customers & Value Chain
+        if (
+            self.data.get("major_customers")
+            or self.data.get("upstream_partners")
+            or self.data.get("downstream_channels")
+            or self.data.get("value_chain_overview")
+        ):
+            self.add_section_header("Customers & Value Chain")
+            if self.data.get("value_chain_overview"):
+                self.add_paragraph(self.data["value_chain_overview"])
+            chain_tables = [
+                ("Major Customers / Clients", "major_customers"),
+                ("Upstream (Suppliers & Inputs)", "upstream_partners"),
+                ("Downstream (Channels & Distribution)", "downstream_channels"),
+            ]
+            for title, key in chain_tables:
+                if self.data.get(key):
+                    self.add_subsection_header(title)
+                    table = self.data[key]
+                    headers = table[0]
+                    rows = table[1:]
+                    if len(headers) == 3:
+                        col_widths = [42, 58, 90]
+                    else:
+                        col_widths = None
+                    self.add_table(headers, rows, col_widths=col_widths)
+            if self.data.get("value_chain_assessment"):
+                self.add_labeled_text("Assessment:", self.data["value_chain_assessment"])
+
+        # --- Page break: product / qualitative -> financial metrics ---
+        has_financial = any(
+            self.data.get(key)
+            for key in (
+                "valuation",
+                "annual_financials",
+                "quarterly_financials",
+                "balance_sheet",
+                "profitability",
+                "cash_flow",
+                "growth",
+            )
+        )
+        if has_financial:
+            self.add_page()
+
         # Valuation Metrics
         if self.data.get("valuation"):
             self.add_section_header("Valuation Metrics")
             self.add_kv_table(self.data["valuation"], cols=3)
 
-        # Quarterly Financials
-        if self.data.get("quarterly_financials"):
-            self.add_section_header("Quarterly Financials (Last 6 Quarters)")
-            headers = ["Quarter", "Revenue", "EPS", "YoY Rev %"]
-            rows = self.data["quarterly_financials"]
-            self.add_table(headers, rows, col_widths=[38, 52, 48, 52])
+        # Annual & Quarterly Financials
+        if self.data.get("annual_financials") or self.data.get("quarterly_financials"):
+            self.add_section_header("Financial Performance")
+            if self.data.get("annual_financials"):
+                self.add_subsection_header("Annual (Last 5 Fiscal Years)")
+                headers = ["Fiscal Year", "Revenue", "EPS", "YoY Rev %", "YoY EPS %"]
+                rows = self.data["annual_financials"]
+                self.add_table(headers, rows, col_widths=[34, 40, 34, 38, 38])
+            if self.data.get("quarterly_financials"):
+                self.add_subsection_header("Quarterly (Last 6 Quarters)")
+                headers = ["Quarter", "Revenue", "EPS", "YoY Rev %"]
+                rows = self.data["quarterly_financials"]
+                self.add_table(headers, rows, col_widths=[38, 52, 48, 52])
 
         # Balance Sheet + Profitability side-by-side
         if self.data.get("balance_sheet") and self.data.get("profitability"):
@@ -277,26 +480,24 @@ class StockReport(FPDF):
                 self.add_section_header("Growth Profile")
                 self.add_kv_table(self.data["growth"], cols=2)
 
-        # Ownership + Analyst side-by-side
-        if self.data.get("ownership") and self.data.get("analyst_consensus"):
-            self.add_two_column_section(
-                "Ownership & Sentiment",
-                self.data["ownership"],
-                "Analyst Consensus",
-                self.data["analyst_consensus"],
+        # --- Page break: financial metrics -> risk / sentiment ---
+        has_risk_sentiment = any(
+            self.data.get(key)
+            for key in (
+                "ownership",
+                "analyst_consensus",
+                "sentiment_analysis",
+                "key_risks",
+                "catalysts",
+                "risks_catalysts",
             )
-        else:
-            if self.data.get("ownership"):
-                self.add_section_header("Ownership & Sentiment")
-                self.add_kv_table(self.data["ownership"], cols=2)
-            if self.data.get("analyst_consensus"):
-                self.add_section_header("Analyst Consensus")
-                self.add_kv_table(self.data["analyst_consensus"], cols=2)
+        )
+        if has_risk_sentiment:
+            self.add_page()
+            self.add_risk_sentiment_section()
 
-        # Risks & Catalysts
-        if self.data.get("risks_catalysts"):
-            self.add_section_header("Risks & Catalysts")
-            self.add_paragraph(self.data["risks_catalysts"])
+        # References (adds its own page break)
+        self.add_references()
 
         self.output(output_path)
 
