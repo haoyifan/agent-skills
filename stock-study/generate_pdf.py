@@ -444,9 +444,12 @@ class StockReport(FPDF):
                 self.add_table(headers, rows, col_widths=[34, 40, 34, 38, 38])
             if self.data.get("quarterly_financials"):
                 self.add_subsection_header("Quarterly (Last 6 Quarters)")
-                headers = ["Quarter", "Revenue", "EPS", "YoY Rev %"]
+                headers = [
+                    "Quarter", "Revenue", "Est. Revenue", "Rev Beat/Miss",
+                    "EPS", "YoY Rev %",
+                ]
                 rows = self.data["quarterly_financials"]
-                self.add_table(headers, rows, col_widths=[38, 52, 48, 52])
+                self.add_table(headers, rows, col_widths=[24, 36, 36, 45, 21, 28])
 
         # Balance Sheet + Profitability side-by-side
         if self.data.get("balance_sheet") and self.data.get("profitability"):

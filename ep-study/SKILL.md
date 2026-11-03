@@ -19,7 +19,13 @@ A ticker plus one or more dates (e.g., `SMCI 2024-01-19` or `NVDA 2024-02-22, 20
    - `<company> earnings <date>` (earnings is the most common EP catalyst — check it first)
    - `why did <company> stock jump/surge/gap <date>`
    - `<company> news <date>`
-3. **Identify the primary catalyst** and classify it using the taxonomy below. If earnings: note beat/miss vs. estimates and guidance direction (raise/cut/reaffirm). Capture whether the news was a genuine **surprise** if the sources say so.
+3. **Identify the primary catalyst** and classify it using the taxonomy below.
+   If earnings, collect reported revenue and adjusted/GAAP EPS (as applicable),
+   the pre-release consensus for each, and each dollar and percentage beat/miss.
+   Also capture guidance direction (raise/cut/reaffirm) and the concrete reason
+   the print was notable, such as an unusually large beat, an outlook change,
+   margin inflection, or a first profit. Capture whether the news was a genuine
+   **surprise** if the sources say so.
 4. **Cross-check ≥2 sources** before stating the catalyst.
 5. **No catalyst found is a valid result.** If nothing surfaces in the window, say so explicitly — a gap with no company news (technical breakout, sector sympathy, index flows) is itself a finding worth recording.
 
@@ -60,6 +66,14 @@ header is the date alone: no emoji, no ticker.
   Type/Timing/Surprise/Sources. Plain text pasted onto a chart.
 - **80-column width.** No line exceeds 80 characters. Wrap the summary onto
   additional plain lines. Verify before returning (see final check).
+- **Earnings cards must explain the surprise.** State the reported value, the
+  pre-release consensus, and the dollar and percentage beat/miss for revenue
+  and adjusted/GAAP EPS when both are reliably available. Include the material
+  guidance change or other concrete differentiator that made the earnings print
+  notable. For example: `Revenue was $211M vs. $168M expected, a $43M (25%)`
+  `beat; adjusted EPS was $0.47 vs. a $0.10 loss expected.` Wrap across lines
+  as needed. If a consensus figure is unavailable, say so rather than inventing
+  one.
 - **Facts only.** Summarize what was announced. Do **not** estimate gap %, volume, or judge whether it was a "good" EP — the caller does that from the chart.
 - **Attribute timing during research** (not in output): confirm the news broke after the prior close or pre-market that day, so the summary reflects the catalyst that actually caused *that* gap, not unrelated news.
 - **Cross-check ≥2 dated sources during research** (not in output) before stating the catalyst. A recent article describing an old event is fine only if it states the date.
@@ -72,6 +86,9 @@ header is the date alone: no emoji, no ticker.
 - Header is the bare date — no emoji, no ticker?
 - Only the date + catalyst summary printed (no label, Type, Timing, Surprise, Sources)?
 - Catalyst verified against ≥2 dated sources during research (even if not printed)?
+- For an earnings catalyst, does the card show actual versus pre-release
+  consensus, the dollar and percentage beat/miss, and the notable guidance or
+  operating change when available?
 - If nothing found, summary reads "No clear catalyst found"?
 - No gap-size/volume figures and no EP-quality scoring invented?
 - **Every line ≤ 80 characters?**

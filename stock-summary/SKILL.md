@@ -1,6 +1,6 @@
 ---
 name: stock-summary
-description: Generate a concise stock summary for a given ticker — business overview (sector, segments, products), recent quarterly financials (revenue, EPS, YoY revenue growth), and valuation (trailing & forward P/E, PEG, P/S, market cap). Output is kept under 1100 characters for easy pasting. Use when asked for a quick stock profile or summary.
+description: Generate a concise stock summary for a given ticker — business overview, six quarterly results with revenue consensus and beat/miss, and valuation. Output is kept under 1100 characters for easy pasting. Use when asked for a quick stock profile or summary.
 ---
 
 # Stock Summary
@@ -14,7 +14,11 @@ A stock ticker symbol (e.g., VIAV, AAPL, MSFT) provided by the caller.
 ## Research workflow
 
 1. **Business overview:** WebSearch for the company's sector, business segments, and key products/services.
-2. **Financial data:** WebSearch for the most recent 6 quarterly results — revenue, EPS, and year-over-year revenue growth percentage.
+2. **Financial data:** WebSearch for the most recent 6 quarterly results —
+   reported revenue, the pre-release consensus revenue estimate, revenue
+   beat/miss, EPS, and year-over-year revenue growth percentage. For each
+   quarter, use the consensus estimate available immediately before the report,
+   not a subsequently revised estimate.
 3. **Valuation:** WebSearch for the current trailing P/E ratio, forward P/E ratio, PEG ratio (P/E to growth), trailing P/S (price-to-sales) ratio, and market capitalization.
 4. **Ownership:** WebSearch for the current institutional ownership as a percentage of shares outstanding.
 5. Cross-check at least two sources to confirm the financial figures.
@@ -33,12 +37,12 @@ A stock ticker symbol (e.g., VIAV, AAPL, MSFT) provided by the caller.
 
 **Quarterly Financials:**
 
-- {Q label}: ${rev} rev, ${EPS} EPS, +{X}% YoY
-- {Q label}: ${rev} rev, ${EPS} EPS, +{X}% YoY
-- {Q label}: ${rev} rev, ${EPS} EPS, +{X}% YoY
-- {Q label}: ${rev} rev, ${EPS} EPS, +{X}% YoY
-- {Q label}: ${rev} rev, ${EPS} EPS, +{X}% YoY
-- {Q label}: ${rev} rev, ${EPS} EPS, +{X}% YoY
+- {Q label}: ${rev} rev vs ${est} est, +${beat} (+{X}%) beat, ${EPS} EPS, +{Y}% YoY
+- {Q label}: ${rev} rev vs ${est} est, -${miss} (-{X}%) miss, ${EPS} EPS, +{Y}% YoY
+- {Q label}: ${rev} rev vs ${est} est, +${beat} (+{X}%) beat, ${EPS} EPS, +{Y}% YoY
+- {Q label}: ${rev} rev vs ${est} est, +${beat} (+{X}%) beat, ${EPS} EPS, +{Y}% YoY
+- {Q label}: ${rev} rev vs ${est} est, +${beat} (+{X}%) beat, ${EPS} EPS, +{Y}% YoY
+- {Q label}: ${rev} rev vs ${est} est, +${beat} (+{X}%) beat, ${EPS} EPS, +{Y}% YoY
 
 **Valuation:** Trailing P/E: {X.X} | Forward P/E: {X.X} | PEG: {X.X} | P/S: {X.X} | MCap: {$X.XB}
 
@@ -50,6 +54,10 @@ A stock ticker symbol (e.g., VIAV, AAPL, MSFT) provided by the caller.
 
 - Use fiscal year quarter labels (e.g., "Q3 FY26").
 - Revenue in millions with one decimal (e.g., $406.8M).
+- Show the pre-release revenue estimate in millions with one decimal. Show the
+  revenue beat/miss as both a dollar amount and percentage of the estimate,
+  e.g. `+$42.1M (+6.3%) beat` or `-$8.4M (-2.1%) miss`. If no reliable
+  pre-release estimate is available, use `N/A` for both estimate and beat/miss.
 - EPS with two decimals, include sign (e.g., $0.03, -$0.21).
 - YoY growth as percentage with one decimal (e.g., +42.8%).
 - Negative EPS or negative YoY growth should show a minus sign.
@@ -64,7 +72,8 @@ A stock ticker symbol (e.g., VIAV, AAPL, MSFT) provided by the caller.
 
 - Is the output under 1100 characters?
 - Are there exactly 6 quarters of data?
-- Does each quarter line include revenue, EPS, and YoY growth?
+- Does each quarter line include reported revenue, pre-release expected revenue,
+  revenue beat/miss, EPS, and YoY growth?
 - Is the business overview concise (1-2 sentences max)?
 - Are trailing P/E, forward P/E, PEG, P/S, and market cap included?
 - Is institutional ownership (percentage) included?

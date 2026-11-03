@@ -118,10 +118,17 @@ For each fiscal year: label (e.g. "FY2025"), revenue, diluted EPS, YoY revenue g
 
 Search: `"{Company} {TICKER} quarterly earnings revenue EPS 2025 2026"`
 
-For each quarter: label (e.g. "Q1 FY26"), revenue, diluted EPS, YoY revenue growth %
+For each quarter: label (e.g. "Q1 FY26"), reported revenue, consensus revenue
+estimate available immediately before the report, revenue beat/miss, diluted EPS,
+and YoY revenue growth %.
 
 - Same GAAP/adjusted EPS rule as annual
 - Quarterly table does not need EPS growth column (YoY rev % is sufficient)
+- Show the revenue beat/miss in dollars and as a percentage of consensus, e.g.
+  `+$42.1M (+6.3%)` or `-$8.4M (-2.1%)`. Use `N/A` only when a reliable
+  pre-release consensus estimate cannot be found.
+- Cite reported and consensus revenue figures. Use the estimate that was current
+  immediately before the earnings release, not a subsequently revised estimate.
 
 ### 7. Balance sheet health (6 items)
 Search: "{Company} {TICKER} balance sheet debt cash current ratio 2025 2026"
@@ -276,8 +283,8 @@ After gathering all data, write a JSON file to `/tmp/{TICKER}_data.json` with th
     ["FY2021", "$13.9B", "$0.93", "N/A", "N/A"]
   ],
   "quarterly_financials": [
-    ["Q1 FY26", "$5.2B", "$1.45", "+12.3%"],
-    ["Q4 FY25", "$4.8B", "$1.32", "+8.7%"],
+    ["Q1 FY26", "$5.2B [2]", "$5.0B [3]", "+$0.2B (+4.0%)", "$1.45 [2]", "+12.3%"],
+    ["Q4 FY25", "$4.8B [4]", "$4.7B [5]", "+$0.1B (+2.1%)", "$1.32 [4]", "+8.7%"],
     ["...6 rows total, most recent first..."]
   ],
   "balance_sheet": [
@@ -344,7 +351,9 @@ After gathering all data, write a JSON file to `/tmp/{TICKER}_data.json` with th
 - Prefix positive growth with "+", negative with "-"
 - If a value is unavailable after searching, use "N/A"
 - `annual_financials`: exactly 5 rows (last 5 fiscal years); columns are Year, Revenue, EPS, YoY Rev %, YoY EPS %
-- `quarterly_financials`: exactly 6 rows; columns are Quarter, Revenue, EPS, YoY Rev %
+- `quarterly_financials`: exactly 6 rows; columns are Quarter, Reported Revenue,
+  Est. Revenue, Rev Beat/Miss, EPS, YoY Rev %. The beat/miss must show both the
+  dollar difference and percentage versus consensus, unless consensus is `N/A`.
 - For the oldest annual year, use "N/A" for YoY columns if no prior-year base exists
 - `segment_summary`: include header row; add one row per material segment (3-8 rows typical)
 - `segment_details`: one object per row in `segment_summary` (excluding header); `outlook` is required prose, not bullet points
@@ -375,6 +384,8 @@ The script outputs the PDF path. Send the PDF file to the user with SendUserFile
 - Does `competitor_summary` include the subject company and 4+ peers with a relative comparison column?
 - Do `major_customers`, `upstream_partners`, and `downstream_channels` name real companies or clearly labeled channel types?
 - Do `annual_financials` (5 years) and `quarterly_financials` (6 quarters) both include YoY revenue growth?
+- Does every quarterly row include a pre-release consensus revenue estimate and
+  the reported revenue beat/miss, with citations for both inputs?
 - Does `segment_details` cover every material product line / reported segment, each with its own outlook?
 - Do segment revenues reconcile roughly to consolidated revenue?
 - Is the JSON valid before running the script?
